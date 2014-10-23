@@ -9,7 +9,9 @@
 1. 跨平台. 4A简易四则运算出题器完全由HTML+CSS+Javascript组成, 可以在任意操作系统上任何一个现代浏览器中运行. 包括Windows, OSX, Linux, 甚至手机中;
 1. 源代码公开. 这是给程序员爸爸/妈妈的福利, 如果你懂一点点网页编程, 你可以很方便地修改出题算法和显示方式以满足自己的需要;
 
+使用方式:
 
-Have a nice day!
+* 在浏览器(Chrome, Firefox, IE...)里面打开4arithmetic.html;
+* 随便点点戳戳, Have a nice day!
 
 Zhuang Yuyao
