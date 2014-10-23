@@ -85,6 +85,30 @@
 			return a1 + " - " + a2;
 		}
 		
+		function revoperator(f) {
+			return f.replace('+', '#').replace('-', '+').replace('#', '-');
+		}
+
+		function generate_formula_asmixed(vmax, num) {
+			var n;
+			var x = get_randwithin(1, 100) % 2;
+			var f = x ? generate_formula_add(vmax) : generate_formula_minus(vmax);
+			for (n = 0; n < num - 2; n ++) {
+				var y = eval(f);
+				var z;
+				x = (y == vmax) ? 0 : ((y == 0) ? 1 : get_randwithin(1, 100) % 2);
+				if (x) {
+					z = get_randwithin(1, vmax - y);
+					f += ' + ' + z;
+				}
+				else {
+					z = get_randwithin(1, y);
+					f += ' - ' + z;
+				}
+			}
+			return f;
+		}
+
 		function show_answer() {
 			if (!document.styleSheets) return;
 			
@@ -166,6 +190,15 @@
 					idx ++;
 				}
 			}
+			if (is_box_checked('opasmixed')) {
+				var vmax = get_integer('max', 20);
+				var mnum = get_integer('mixednum', 4);
+				for (n = 0; n < vnum; n ++) {
+					var f = generate_formula_asmixed(vmax, mnum);
+					r[idx] = f;
+					idx ++;
+				}
+			}
 			if (is_box_checked('opmulti')) {
 				var v1 = get_integer('digita', 3);
 				var v2 = get_integer('digitb', 1);
@@ -198,7 +231,7 @@
 		}
 		
 	</script>
-	<h1>4A简易四则运算出题器 <a href="https://github.com/zhuangyy/4arithmetic">v0.2.1</a></h1>
+	<h1>4A简易四则运算出题器 <a href="https://github.com/zhuangyy/4arithmetic">v0.2.2</a></h1>
 	<form id="iform">
 		<label>
 			日期:
@@ -215,6 +248,7 @@
 			<input type="checkbox" id="opminus" value="yes"/><label for="opminus">减(-)</label>
 			<input type="checkbox" id="opmulti" value="yes" checked="yes" /><label for="opmulti">乘(×)</label>
 			<input type="checkbox" id="opdivide" value="yes" /><label for="opdivide">除(÷)</label>
+			<input type="checkbox" id="opasmixed" value="yes" /><label for="opasmixed">加减混合</label>
 		</label>
 		<br/>
 		<label>
@@ -227,6 +261,11 @@
 			<input type="text" id="digita" value="3" size="6"/>位数
 			*
 			<input type="text" id="digitb" value="1" size="6"/>位数
+		</label>
+		<br/>
+		<label>
+			输入加减混合运算数字个数:
+			<input type="text" id="mixednum" value="4" size="6"/>
 		</label>
 		<br/>
 		<label>

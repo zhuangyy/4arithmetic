@@ -14,4 +14,11 @@
 * 在浏览器(Chrome, Firefox, IE...)里面打开4arithmetic.html;
 * 随便点点戳戳, Have a nice day!
 
-Zhuang Yuyao
+
+
+修改记录
+===========
+
+**v0.2.2**
+
+* 新增加减混合运算
