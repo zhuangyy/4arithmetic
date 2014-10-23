@@ -1,0 +1,248 @@
+<html>
+	<META http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<STYLE type="text/css">
+		.enclosed {
+			border: 1px solid #999999;
+		}
+		.listlr {
+			background-color: #FFFFFF;
+			border-right: 1px solid #999999;
+			border-bottom: 1px solid #999999;
+			border-left: 1px solid #999999;
+			padding-right: 6px;
+			padding-left: 6px;
+			padding-top: 4px;
+			padding-bottom: 4px;
+		}
+		.listn {
+			background-color: #DDDDDD;
+			border-right: 1px solid #999999;
+			border-bottom: 1px solid #999999;
+			border-left: 1px solid #999999;
+			padding-right: 6px;
+			padding-left: 6px;
+			padding-top: 4px;
+			padding-bottom: 4px;
+		}
+		.answer {
+			color: #FF0000;
+			display: none;
+		}
+	</STYLE>
+	<body>
+	<script type="text/javascript">
+		function get_randwithin(min, max) {
+    	return Math.floor(Math.random()*(max-min+1)+min);
+		}
+
+		function shuffle(array) {
+		  var counter = array.length, temp, index;
+
+		  // While there are elements in the array
+		  while (counter > 0) {
+		    // Pick a random index
+		    index = Math.floor(Math.random() * counter);
+
+		    // Decrease counter by 1
+		    counter--;
+
+		    // And swap the last element with it
+		    temp = array[counter];
+		    array[counter] = array[index];
+		    array[index] = temp;
+		  }
+
+		  return array;
+		}
+
+		function generate_formula_multi(u1, u2) {
+			var x1 = get_randwithin(u1 / 10 + 1, u1 - 1);
+			var x2 = get_randwithin(u2 / 10 + 1, u2 - 1);
+			return x1 + " * " + x2;
+		}
+
+		function generate_formula_divide(u1, u2) {
+			var x1 = get_randwithin(u1 / 10 + 1, u1 - 1);
+			var x2 = get_randwithin(u2 / 10 + 1, u2 - 1);
+			var x = x1 * x2;
+			return x + " / " + x2;
+		}
+
+		function generate_formula_add(vmax) {
+			var a1 = get_randwithin(1, vmax - 1);
+			var a2 = get_randwithin(1, vmax - a1);
+			return a1 + " + " + a2;
+		}
+
+		function generate_formula_minus(vmax) {
+			var a1 = get_randwithin(1, vmax);
+			var a2 = get_randwithin(1, vmax);
+			if (a1 < a2) {
+				var t = a1;
+				a1 = a2;
+				a2 = t;
+			}
+			return a1 + " - " + a2;
+		}
+		
+		function show_answer() {
+			if (!document.styleSheets) return;
+			
+			var rules = new Array();
+			if (document.styleSheets[0].cssRules) {
+				rules = document.styleSheets[0].cssRules
+			}
+			else if (document.styleSheets[0].rules) {
+				rules = document.styleSheets[0].rules
+			}
+			else {
+				return;
+			}
+			var elem = document.getElementById('showanswer');
+			rules[rules.length-1].style.display = (elem.checked) ? '' : 'none' ;
+		}
+		
+		function tohtml(fs, cols) {
+			var i;
+			var r;
+			var intr = false;
+			
+			r = '<label>显示答案:<input type="checkbox" id="showanswer" onclick="show_answer();" /></label><br/>';
+			r += '<table class="enclosed" cellspacing="0" cellpadding="6" width="100%">';
+			for(i=0; i<fs.length; i++) { 
+				if (i % cols == 0) {
+					r += '<tr>';
+					intr = true;
+				}
+				r += '<td class="listn" width="2%">' + (i+1) + '</td>';
+				r += '<td class="listlr">' + fs[i].replace('/', '÷').replace('*', '×') + ' = ';
+				r += '<span class="answer">' + eval(fs[i]) + '</span>';
+				r += '</td>';
+				if (i % cols == (cols - 1)) {
+					r += '</tr>';
+					intr = false;
+				}
+			}
+			if (intr) {
+				r += '</tr>';
+			}
+			r += '</table>';
+			return r;
+		}
+		
+		function get_integer(id, def) {
+			var emem = document.getElementById(id);
+			var v = emem.value;
+			if (isNaN(v) || v <= 0) {
+				v = def;
+				emem.value = v;
+			}
+			return v;
+		}
+
+		function is_box_checked(id) {
+			var elem = document.getElementById(id);
+			return elem.checked;
+		}
+
+		function generate() {
+			var vnum = get_integer('num', 40);
+			var idx = 0;
+			var n = 0;
+			var r = [];
+			if (is_box_checked('opaddition')) {
+				var vmax = get_integer('max', 20);			
+				for (n = 0; n < vnum; n ++) {
+					var f = generate_formula_add(vmax);
+					r[idx] = f;
+					idx ++;
+				}
+			}
+			if (is_box_checked('opminus')) {
+				var vmax = get_integer('max', 20);			
+				for (n = 0; n < vnum; n ++) {
+					var f = generate_formula_minus(vmax);
+					r[idx] = f;
+					idx ++;
+				}
+			}
+			if (is_box_checked('opmulti')) {
+				var v1 = get_integer('digita', 3);
+				var v2 = get_integer('digitb', 1);
+				var u1 = Math.pow(10, v1);
+				var u2 = Math.pow(10, v2);
+				for (n = 0; n < vnum; n ++) {
+					var f = generate_formula_multi(u1, u2);
+					r[idx] = f;
+					idx ++;
+				}
+			}
+			if (is_box_checked('opdivide')) {
+				var v1 = get_integer('digita', 3);
+				var v2 = get_integer('digitb', 1);
+				var u1 = Math.pow(10, v1);
+				var u2 = Math.pow(10, v2);
+				for (n = 0; n < vnum; n ++) {
+					var f = generate_formula_divide(u1, u2);
+					r[idx] = f;
+					idx ++;
+				}
+			}
+
+			if (is_box_checked('shuffle')) {
+				r = shuffle(r);
+			}
+			var elem = document.getElementById('formula');
+			elem.innerHTML = tohtml(r, 4);
+			show_answer();
+		}
+		
+	</script>
+	<h1>4A简易四则运算出题器 <a href="https://github.com/zhuangyy/4arithmetic">v0.2.1</a></h1>
+	<form id="iform">
+		<label>
+			日期:
+			<span id="datetime">
+				<script type="text/javascript">
+				document.write(Date());
+				</script>
+			</span>
+		</label>
+		<br/>
+		<label>
+			运算符:
+			<input type="checkbox" id="opaddition" value="yes" /><label for="opaddition">加(+)</label>
+			<input type="checkbox" id="opminus" value="yes"/><label for="opminus">减(-)</label>
+			<input type="checkbox" id="opmulti" value="yes" checked="yes" /><label for="opmulti">乘(×)</label>
+			<input type="checkbox" id="opdivide" value="yes" /><label for="opdivide">除(÷)</label>
+		</label>
+		<br/>
+		<label>
+			输入加减运算上限:
+			<input type="text" id="max" value="20"/>
+		</label>
+		<br/>
+		<label>
+			输入乘除运算数字区间:
+			<input type="text" id="digita" value="3" size="6"/>位数
+			*
+			<input type="text" id="digitb" value="1" size="6"/>位数
+		</label>
+		<br/>
+		<label>
+			输入出题数量:
+			<input type="text" id="num" value="40"/>
+		</label>
+		<br/>
+		<label>
+			题目顺序随机:
+			<input type="checkbox" id="shuffle" value="yes"/>
+		</label>
+		<br/>
+		<input type="button" value="出题" onclick="generate();">
+		<br/>
+		<div id="formula">
+		</div>
+	</form>
+	</body>
+</html>
